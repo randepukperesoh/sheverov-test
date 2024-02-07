@@ -4,18 +4,22 @@
 // Будет большим плюсом, если Вы сможете закэшировать получение случайного пользователя.
 // Укажите правильные типы.
 
-import React, { useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { IButtonProps, IUserInfoProps, User } from "./types";
+import useThrottle from './hooks'
 
 const URL = "https://jsonplaceholder.typicode.com/users";
 
-function Button({ onClick }: IButtonProps): JSX.Element {
+const Button = memo(
+  function Button({ onClick }: IButtonProps): JSX.Element {
+  console.log('BTN rerender', new Date().toLocaleTimeString())
   return (
     <button type="button" onClick={onClick}>
       get random user
     </button>
   );
 }
+)
 
 function UserInfo({ user }: IUserInfoProps): JSX.Element {
   return (
@@ -35,6 +39,7 @@ function UserInfo({ user }: IUserInfoProps): JSX.Element {
     </table>
   );
 }
+
 function App(): JSX.Element {
   const [item, setItem] = useState<User | null>(null);
 
@@ -45,12 +50,7 @@ function App(): JSX.Element {
     setItem(_user);
   };
 
-  const handleButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    event.stopPropagation(); // не понятно зачем нужен
-    receiveRandomUser();
-  };
+  const handleButtonClick = useThrottle(() => receiveRandomUser(), 1000);
 
   return (
     <div>
