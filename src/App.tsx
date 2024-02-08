@@ -20,13 +20,11 @@ function App(): JSX.Element {
     const _user = (await response.json()) as User;
     setItem(_user);
   },[]);
-
-  const handleButtonClick = receiveRandomUser;
   
   return (
     <div>
       <header>Get a random user</header>
-      <Button onClick={handleButtonClick} />
+      <Button onClick={receiveRandomUser} />
       {item == null ? null : <UserInfo user={item} />}
     </div>
   );
