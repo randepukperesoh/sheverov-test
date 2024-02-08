@@ -4,54 +4,25 @@
 // Будет большим плюсом, если Вы сможете закэшировать получение случайного пользователя.
 // Укажите правильные типы.
 
-import React, { memo, useCallback, useState } from "react";
-import { IButtonProps, IUserInfoProps, User } from "./types";
-import useThrottle from './hooks'
+import { useCallback, useState } from "react";
+import { User } from "./types";
+import { UserInfo } from "./UserInfo/UserInfo";
+import {Button} from './Button/Button'
 
 const URL = "https://jsonplaceholder.typicode.com/users";
-
-const Button = memo(
-  function Button({ onClick }: IButtonProps): JSX.Element {
-  console.log('BTN rerender', new Date().toLocaleTimeString())
-  return (
-    <button type="button" onClick={onClick}>
-      get random user
-    </button>
-  );
-}
-)
-
-function UserInfo({ user }: IUserInfoProps): JSX.Element {
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Phone number</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{user.name}</td>
-          <td>{user.phone}</td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
 
 function App(): JSX.Element {
   const [item, setItem] = useState<User | null>(null);
 
-  const receiveRandomUser = async () => {
+  const receiveRandomUser = useCallback(async () => {
     const id = Math.floor(Math.random() * (10 - 1)) + 1;
     const response = await fetch(`${URL}/${id}`);
     const _user = (await response.json()) as User;
     setItem(_user);
-  };
+  },[]);
 
-  const handleButtonClick = useThrottle(() => receiveRandomUser(), 1000);
-
+  const handleButtonClick = receiveRandomUser;
+  
   return (
     <div>
       <header>Get a random user</header>
